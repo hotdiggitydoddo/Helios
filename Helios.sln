@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helios.Core", "Helios.Core\Helios.Core.csproj", "{186403A0-8A5E-4FAA-AD62-F0CB6072BFB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaddleBallBlitz", "PaddleBallBlitz\PaddleBallBlitz.csproj", "{662E0475-E615-4A6A-A13A-12D6456674D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{186403A0-8A5E-4FAA-AD62-F0CB6072BFB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{186403A0-8A5E-4FAA-AD62-F0CB6072BFB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{186403A0-8A5E-4FAA-AD62-F0CB6072BFB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{186403A0-8A5E-4FAA-AD62-F0CB6072BFB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{662E0475-E615-4A6A-A13A-12D6456674D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{662E0475-E615-4A6A-A13A-12D6456674D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{662E0475-E615-4A6A-A13A-12D6456674D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{662E0475-E615-4A6A-A13A-12D6456674D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
