@@ -26,14 +26,16 @@ namespace PaddleBallBlitz
 			Name = name;
 		}
 
-		public Sprite(string name, Color color) : this(name)
+		public Sprite(string name, Color color)
 		{
 			Color = color;
+            Scale = Vector2.One;
+		    Name = name;
 		}
 
 		public int TypeId()
 		{
-			return 3;
+			return (int)ComponentTypes.Sprite;
 		}
 	}
 }

@@ -6,6 +6,9 @@ namespace PaddleBallBlitz
 		None = 0,
 		Spatial,
 		Sprite,
-		Physics
+		Physics,
+        Collider,
+        BallAI,
+        Input
 	}
 }

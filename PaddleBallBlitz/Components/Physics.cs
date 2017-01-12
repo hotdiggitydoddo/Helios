@@ -9,6 +9,8 @@ namespace PaddleBallBlitz
 		public float VelX { get; set; }
 		public float VelY { get; set; }
 
+        public bool IsMoving { get { return VelX != 0f || VelY != 0f; } }
+
 		public Physics() { }
 		public Physics(float speed, float velX, float velY)
 		{
@@ -19,7 +21,7 @@ namespace PaddleBallBlitz
 
 		public int TypeId()
 		{
-			return 2;
+			return (int)ComponentTypes.Physics;
 		}
 	}
 }

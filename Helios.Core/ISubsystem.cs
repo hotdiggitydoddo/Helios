@@ -8,7 +8,13 @@ namespace Helios.Core
 
 		void OnComponentAdded(uint entity);
 		void OnComponentRemoved(uint entity);
-		void Update();
+		void Update(float dt);
 		void CreateAspect(uint entity, List<IComponent> components);
+	    bool HasAspect(uint entity);
 	}
+
+    public interface ILateUpdateable
+    {
+        void LateUpdate(float dt);
+    }
 }

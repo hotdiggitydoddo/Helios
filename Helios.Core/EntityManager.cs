@@ -14,9 +14,9 @@ namespace Helios.Core
 		}
 
 		private uint _nextId = 1;
-		private Dictionary<uint, List<IComponent>> _components;
-		private List<ISubsystem> _subsystems;
-		private Dictionary<uint, Bitset> _entities;
+		private readonly Dictionary<uint, List<IComponent>> _components;
+		private readonly List<ISubsystem> _subsystems;
+		private readonly Dictionary<uint, Bitset> _entities;
 
 		public uint CreateEntity()
 		{
@@ -58,8 +58,11 @@ namespace Helios.Core
 
 			var relevantSubsystems = _subsystems.Where(s => s.ComponentMask.IsSubsetOf(_entities[entity]));
 
-			foreach (var s in relevantSubsystems)
-				s.CreateAspect(entity, GetComponents(entity));
-		}
+		    foreach (var s in relevantSubsystems)
+		    {
+		        if (!s.HasAspect(entity))
+                    s.CreateAspect(entity, GetComponents(entity));
+            }
+        }
 	}
 }

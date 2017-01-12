@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Helios.Core;
 
 namespace Helios.Core
 {
 	public abstract class Subsystem : ISubsystem
 	{
-		private List<uint> _entitiesToAdd;
-		private List<uint> _entitiesToRemove;
+		private readonly List<uint> _entitiesToAdd;
+		private readonly List<uint> _entitiesToRemove;
 
 		protected EntityManager _em { get; private set; }
 		protected List<uint> _relevantEntities { get; private set; }
@@ -15,7 +14,7 @@ namespace Helios.Core
 
 		public Bitset ComponentMask { get { return _bits; } }
 
-		public Subsystem(EntityManager em)
+	    protected Subsystem(EntityManager em)
 		{
 			_em = em;
 			_bits = new Bitset();
@@ -34,7 +33,7 @@ namespace Helios.Core
 			_entitiesToRemove.Add(entity);
 		}
 
-		public virtual void Update()
+		public virtual void Update(float dt)
 		{
 			_relevantEntities.AddRange(_entitiesToAdd);
 			_relevantEntities.RemoveAll(x => _entitiesToRemove.Contains(x));
@@ -43,6 +42,7 @@ namespace Helios.Core
 			_entitiesToRemove.Clear();
 		}
 
-		public virtual void CreateAspect(uint entity, List<IComponent> components) { }
+	    public abstract void CreateAspect(uint entity, List<IComponent> components);
+	    public abstract bool HasAspect(uint entity);
 	}
 }

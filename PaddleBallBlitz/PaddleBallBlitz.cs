@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Helios.Core;
+using PaddleBallBlitz.Components;
+using PaddleBallBlitz.Subsystems;
 
 namespace PaddleBallBlitz
 {
@@ -18,6 +20,15 @@ namespace PaddleBallBlitz
 		EntityManager _em;
 		SpriteRendererSubsystem _ss;
 		PhysicsSubsystem _ps;
+	    private CollisionSubsystem _cs;
+	    private BallAISubsystem _bs;
+	    private InputSubsystem _is;
+
+        private FrameCounter _frameCounter = new FrameCounter();
+	    private SpriteFont _spriteFont;
+
+        public static int SCREEN_WIDTH;
+	    public static int SCREEN_HEIGHT;
 
 		public PaddleBallBlitz()
 		{
@@ -34,9 +45,11 @@ namespace PaddleBallBlitz
 		/// </summary>
 		protected override void Initialize()
 		{
-			// TODO: Add your initialization logic here
+            // TODO: Add your initialization logic here
 
-			base.Initialize();
+            SCREEN_WIDTH = graphics.GraphicsDevice.Viewport.Width;
+            SCREEN_HEIGHT = graphics.GraphicsDevice.Viewport.Height;
+            base.Initialize();
 		}
 
 		/// <summary>
@@ -47,34 +60,50 @@ namespace PaddleBallBlitz
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+            //TODO: use this.Content to load your game content here
 
-			//TODO: use this.Content to load your game content here
+		    _spriteFont = Content.Load<SpriteFont>("Arial");
 
-			var atlas = new TextureAtlas(Content);
-			atlas.LoadTexture("4square");
-			atlas.LoadSpriteLegend("atlas.json");
+            var atlas = new TextureAtlas(Content);
+            atlas.LoadTexture("spritesheet");
+            atlas.LoadSpriteLegend("atlas.json");
+            //atlas.LoadTexture("4square");
+            //atlas.LoadSpriteLegend("atlas.json");
 
-			_ss = new SpriteRendererSubsystem(_em, atlas, spriteBatch);
+            _ss = new SpriteRendererSubsystem(_em, atlas, spriteBatch);
 			_em.RegisterSubsystem(_ss);
 
 			_ps = new PhysicsSubsystem(_em);
 			_em.RegisterSubsystem(_ps);
 
-			var e = _em.CreateEntity();
+            _cs = new CollisionSubsystem(_em);
+            _em.RegisterSubsystem(_cs);
 
-			var sprite = new Sprite("Red");
-			var spatial = new Spatial(100, 150);
-			_em.AddComponent(e, sprite);
-			_em.AddComponent(e, spatial);
-			_em.AddComponent(e, new Physics(1, 1, 1));
+            _bs = new BallAISubsystem(_em);
+            _em.RegisterSubsystem(_bs);
 
-			//needs to be a subset of when registering entities with subsystems!
+            _is = new InputSubsystem(_em);
+            _em.RegisterSubsystem(_is);
 
-			var e1 = _em.CreateEntity();
+			var ball = _em.CreateEntity();
+			var ballSprite = new Sprite("Ball");
+			var ballSpatial = new Spatial(100, 150);
+			_em.AddComponent(ball, ballSpatial);
+            _em.AddComponent(ball, ballSprite);
+			_em.AddComponent(ball, new Physics(300, 1, 1));
+		    _em.AddComponent(ball,
+		        new CircleCollider(ballSpatial.Position, ballSprite.SrcRect.Height/2));
+            _em.AddComponent(ball, new BallAI());
 
-			_em.AddComponent(e1, new Sprite("Blue"));
-			_em.AddComponent(e1, new Spatial(300, 300));
-
+			var paddle = _em.CreateEntity();
+            var paddleSprite = new Sprite("Paddle");
+            var paddleSpatial = new Spatial(300, 300);
+            _em.AddComponent(paddle, paddleSpatial);
+            _em.AddComponent(paddle, paddleSprite);
+            _em.AddComponent(paddle, new Physics(350, 0, 0));
+            _em.AddComponent(paddle, new Input());
+		    _em.AddComponent(paddle,
+		        new BoxCollider(paddleSpatial.Position, paddleSprite.SrcRect.Width, paddleSprite.SrcRect.Height));
 		}
 
 		/// <summary>
@@ -84,17 +113,22 @@ namespace PaddleBallBlitz
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
-			// For Mobile devices, this logic will close the Game when the Back button is pressed
-			// Exit() is obsolete on iOS
+		    var dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            // For Mobile devices, this logic will close the Game when the Back button is pressed
+            // Exit() is obsolete on iOS
 #if !__IOS__ && !__TVOS__
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 #endif
-
 			// TODO: Add your update logic here
+            _is.Update(dt);
+			_ps.Update(dt);
+            _cs.Update(dt);
+            _bs.Update(dt);
 
-			_ps.Update();
-
+            _ps.LateUpdate(dt);
+            _cs.LateUpdate(dt);
 			base.Update(gameTime);
 		}
 
@@ -104,12 +138,22 @@ namespace PaddleBallBlitz
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+			graphics.GraphicsDevice.Clear(Color.Black);
 
-			//TODO: Add your drawing code here
-			spriteBatch.Begin();
+            //TODO: Add your drawing code here
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            _frameCounter.Update(deltaTime);
+
+            var fps = string.Format("FPS: {0}", _frameCounter.AverageFramesPerSecond);
+
+
+
+            spriteBatch.Begin();
 			_ss.Draw();
-			spriteBatch.End();
+            spriteBatch.DrawString(_spriteFont, fps, new Vector2(1, 1), Color.White);
+
+            spriteBatch.End();
 
 			base.Draw(gameTime);
 		}
